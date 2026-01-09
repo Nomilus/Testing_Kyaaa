@@ -1,21 +1,22 @@
+from ultralytics import YOLO
 import cv2
-import torch
 
-model = torch.hub.load('ultralytics/yolov5', 'yolov5s')
+# 1. โหลดโมเดล (เบา + เร็ว เหมาะสาธิต)
+model = YOLO("yolov8n.pt")
 
-cap = cv2.VideoCapture(0)
+# 2. โหลดภาพ
+img = cv2.imread("../image/majo.png")
 
-while True:
-    ret, frame = cap.read()
-    if not ret:
-        break
+# 3. ตรวจจับวัตถุ
+results = model(img)
 
-    model(frame).render()
+# 4. วาดผลลัพธ์ลงบนภาพ
+annotated_img = results[0].plot()
 
-    cv2.imshow('YOLOv5 Detection', frame)
-
-    if cv2.waitKey(1) & 0xFF == ord('q'):
-        break
-
-cap.release()
+# 5. แสดงผล
+cv2.imshow("YOLO Detection", annotated_img)
+cv2.waitKey(0)
 cv2.destroyAllWindows()
+
+# 6. บันทึกภาพผลลัพธ์
+cv2.imwrite("result.jpg", annotated_img)
